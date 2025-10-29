@@ -273,7 +273,6 @@ export default function SettingsScreen() {
           </Text>
         </View>
 
-        {/* Goalkeeper Info */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>GOALKEEPER - inspired by</Text>
           
@@ -416,7 +415,7 @@ export default function SettingsScreen() {
           <Text style={styles.appName}>{APP_NAME}</Text>
           <Text style={styles.appVersion}>Version {APP_VERSION}</Text>
           <Text style={styles.copyright}>© 2025 Old Skool Apps LLC</Text>
-          <Text style={styles.madeWith}>Made with ❤️ for football fans</Text>
+          <Text style={styles.madeWith}>Made with love for football fans</Text>
         </View>
       </ScrollView>
     </View>
