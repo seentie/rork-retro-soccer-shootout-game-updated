@@ -295,9 +295,7 @@ export default function SettingsScreen() {
             Argentina's star goalkeeper who made crucial saves throughout the tournament, leading his team to historic victory.
           </Text>
           
-          <Text style={styles.keeperNote}>
-            We think the keeper loosely resembles Ubaldo
-          </Text>
+          <Text style={styles.keeperNote}>We think the keeper loosely resembles Ubaldo</Text>
         </View>
 
         {/* View Mode */}
