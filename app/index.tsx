@@ -587,14 +587,23 @@ export default function SoccerShootout() {
         });
         console.log('✅ Audio mode configured');
 
+        if (Platform.OS === 'android') {
+          await new Promise(resolve => setTimeout(resolve, 100));
+        }
+
         console.log('🔊 Loading crowd sound...');
         try {
           const { sound: crowd } = await Audio.Sound.createAsync(
             { uri: 'https://assets.mixkit.co/active_storage/sfx/2505/2505-preview.mp3' },
-            { isLooping: true, volume: 0.3, shouldPlay: false }
+            { isLooping: true, volume: 0.3, shouldPlay: false },
+            (status) => {
+              if (status.isLoaded) {
+                console.log('✅ Crowd sound loaded');
+              }
+            },
+            false
           );
           crowdSound.current = crowd;
-          console.log('✅ Crowd sound loaded');
         } catch (err) {
           console.warn('⚠️ Could not load crowd sound:', err);
         }
@@ -603,7 +612,9 @@ export default function SoccerShootout() {
         try {
           const { sound: goal } = await Audio.Sound.createAsync(
             { uri: 'https://assets.mixkit.co/active_storage/sfx/2018/2018-preview.mp3' },
-            { volume: 0.8, shouldPlay: false }
+            { volume: 0.8, shouldPlay: false },
+            null,
+            false
           );
           goalSound.current = goal;
           console.log('✅ Goal commentator sound loaded');
@@ -615,7 +626,9 @@ export default function SoccerShootout() {
         try {
           const { sound: cheer } = await Audio.Sound.createAsync(
             { uri: 'https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3' },
-            { volume: 0.6, shouldPlay: false }
+            { volume: 0.6, shouldPlay: false },
+            null,
+            false
           );
           cheerSound.current = cheer;
           console.log('✅ Crowd cheer sound loaded');
@@ -627,7 +640,9 @@ export default function SoccerShootout() {
         try {
           const { sound: block } = await Audio.Sound.createAsync(
             { uri: 'https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3' },
-            { volume: 0.7, shouldPlay: false }
+            { volume: 0.7, shouldPlay: false },
+            null,
+            false
           );
           blockSound.current = block;
           console.log('✅ Block sound loaded');
@@ -698,9 +713,21 @@ export default function SoccerShootout() {
 
   useEffect(() => {
     if (soundEnabled && crowdSound.current) {
-      crowdSound.current.playAsync().catch(err => console.log('Could not play crowd sound:', err));
+      crowdSound.current.getStatusAsync()
+        .then((status) => {
+          if (status.isLoaded && !status.isPlaying) {
+            return crowdSound.current?.playAsync();
+          }
+        })
+        .catch(err => console.log('Could not play crowd sound:', err));
     } else if (!soundEnabled && crowdSound.current) {
-      crowdSound.current.pauseAsync().catch(() => {});
+      crowdSound.current.getStatusAsync()
+        .then((status) => {
+          if (status.isLoaded && status.isPlaying) {
+            return crowdSound.current?.pauseAsync();
+          }
+        })
+        .catch(() => {});
     }
   }, [soundEnabled]);
 
@@ -891,14 +918,13 @@ export default function SoccerShootout() {
               <View
                 key={`d1-${i}`}
                 style={{
-                  position: 'absolute',
+                  position: 'absolute' as const,
                   top: 0,
                   left: `${i * 14}%`,
                   width: 1,
                   height: '141%',
                   backgroundColor: 'rgba(255, 255, 255, 0.08)',
                   transform: [{ rotate: '45deg' }],
-                  transformOrigin: 'top left',
                 }}
               />
             ))}
@@ -906,14 +932,13 @@ export default function SoccerShootout() {
               <View
                 key={`d2-${i}`}
                 style={{
-                  position: 'absolute',
+                  position: 'absolute' as const,
                   top: 0,
                   right: `${i * 14}%`,
                   width: 1,
                   height: '141%',
                   backgroundColor: 'rgba(255, 255, 255, 0.08)',
                   transform: [{ rotate: '-45deg' }],
-                  transformOrigin: 'top right',
                 }}
               />
             ))}
